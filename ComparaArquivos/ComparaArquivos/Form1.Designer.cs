@@ -41,6 +41,7 @@
             this.txtPasta1 = new System.Windows.Forms.TextBox();
             this.btnPasta2 = new System.Windows.Forms.Button();
             this.btnPasta1 = new System.Windows.Forms.Button();
+            this.fbd1 = new System.Windows.Forms.FolderBrowserDialog();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgwdirconflito)).BeginInit();
@@ -87,7 +88,7 @@
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label30.ForeColor = System.Drawing.Color.Brown;
-            this.label30.Location = new System.Drawing.Point(225, 143);
+            this.label30.Location = new System.Drawing.Point(152, 143);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(130, 15);
             this.label30.TabIndex = 54;
@@ -145,6 +146,7 @@
             this.btnPasta2.Size = new System.Drawing.Size(64, 57);
             this.btnPasta2.TabIndex = 50;
             this.btnPasta2.UseVisualStyleBackColor = false;
+            this.btnPasta2.Click += new System.EventHandler(this.btnPasta2_Click);
             // 
             // btnPasta1
             // 
@@ -155,6 +157,7 @@
             this.btnPasta1.Size = new System.Drawing.Size(64, 57);
             this.btnPasta1.TabIndex = 49;
             this.btnPasta1.UseVisualStyleBackColor = false;
+            this.btnPasta1.Click += new System.EventHandler(this.btnPasta1_Click);
             // 
             // Form1
             // 
@@ -186,6 +189,7 @@
         private System.Windows.Forms.TextBox txtPasta1;
         private System.Windows.Forms.Button btnPasta2;
         private System.Windows.Forms.Button btnPasta1;
+        private System.Windows.Forms.FolderBrowserDialog fbd1;
     }
 }
 
