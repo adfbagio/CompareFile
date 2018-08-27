@@ -105,7 +105,7 @@ namespace ComparaArquivos
             listapasta2(txtPasta2.Text);
 
             btnPasta2.Enabled = false;
-            ComparaListas();
+         ///////   ComparaListas();
             testageral();
         }
 
@@ -426,6 +426,7 @@ namespace ComparaArquivos
                 string fonte=ListadePasta1[aa].Fonte.ToString();
                 string path1= ListadePasta1[aa].Diretorio.ToString();
                 string path2 = ListadePasta2[aa].Diretorio.ToString();
+                comparateit2dir(path1 + "\\" + fonte, path2 + "\\" + fonte, fonte);
             }
             var queryDesenvenaoSt = (from file in querylistaobjetos2
                                      select file).Except(querylistaobjetos, myFileCompareNomeTamIgual1);
