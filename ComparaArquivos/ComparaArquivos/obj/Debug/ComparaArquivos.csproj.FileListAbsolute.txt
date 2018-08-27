@@ -1,0 +1,10 @@
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\bin\Debug\ComparaArquivos.exe.config
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\bin\Debug\ComparaArquivos.exe
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\bin\Debug\ComparaArquivos.pdb
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.csprojResolveAssemblyReference.cache
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.Form1.resources
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.Properties.Resources.resources
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.csproj.GenerateResource.cache
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.csproj.CoreCompileInputs.cache
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.exe
+D:\FrangoProjects\Projs\NET\C#\ComparaArquivos\CompareFile\ComparaArquivos\ComparaArquivos\obj\Debug\ComparaArquivos.pdb
