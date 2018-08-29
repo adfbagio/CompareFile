@@ -32,6 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.TeamFoundation.Client">
+      <HintPath>..\..\..\..\..\..\..\..\All\Projetos\Bradesco\Sise\Gestão de Ambiente\SCA\BUSS\lib\net45\Microsoft.TeamFoundation.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.VersionControl.Client">
+      <HintPath>C:\Users\afranco\Downloads\SCAnew\SCAMenu\packages\Microsoft.TeamFoundationServer.ExtendedClient.15.112.1\lib\net45\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.Common">
+      <HintPath>..\..\..\..\..\..\..\..\All\Projetos\Bradesco\Sise\Gestão de Ambiente\SCA\BUSS\Team\Microsoft.VisualStudio.Services.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

@@ -8,6 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.TeamFoundation.Client;
+//using TeamFoundationServer.ExtendedClient;
+using Microsoft.TeamFoundation.Client.ProjectSettings;
+using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace ComparaArquivos
 {
@@ -76,9 +80,10 @@ namespace ComparaArquivos
             }
 
             //--------------
-            listapasta1(txtPasta1.Text);
-
+          //  listapasta1(txtPasta1.Text);
+            testacomparatfs();
             btnPasta1.Enabled = false;
+            
         }
 
         private void btnPasta2_Click(object sender, EventArgs e)
@@ -107,6 +112,7 @@ namespace ComparaArquivos
             btnPasta2.Enabled = false;
          ///////   ComparaListas();
             testageral();
+            testacomparatfs();
         }
 
         public void listapasta2(string caminho)
@@ -232,6 +238,66 @@ namespace ComparaArquivos
 
         }
 
+
+        public int  tamfiltro;
+        public int Pesquisastring2(string pathpesq, string filtro)
+        //public string Pesquisastring(string pathpesq, string filtro)
+        //***********************************************************
+        //Pesquisa dentro de uma string de diretório pelo pasta raiz
+        //***********************************************************
+        {
+            try
+            {
+
+
+                //busca se tem espaco em branco
+                tamfiltro = Convert.ToInt32(filtro.Length);
+                int posicaoini = 0;
+                int posicaoespaco = pathpesq.IndexOf(" ", posicaoini, StringComparison.Ordinal);//procura a string "\\" na string StrPath
+                int tamanhostring = Convert.ToInt32(pathpesq.Length);
+                int limite = tamanhostring - 1;
+
+
+                if (posicaoespaco == 0 || posicaoespaco == -1)
+                {
+                    do
+                    {
+                        posicaoespaco = pathpesq.IndexOf(filtro, posicaoini, StringComparison.Ordinal);//procura a string "\\" na string StrPath
+                        if (posicaoespaco != -1)
+                        {
+                            if (posicaoespaco < limite)
+                            {
+                                Posguardar = posicaoespaco;
+                            }
+                        }
+                        posicaoini = (posicaoini + 1);
+                    } while (posicaoespaco != -1);
+                }
+                else
+                {
+                    pathpesq = pathpesq.Replace(" ", "_");
+                    Usouunderline = true;
+                    Pesquisastring(pathpesq, filtro);
+                }
+                tamanhostring = tamanhostring - (Posguardar + tamfiltro);
+
+                string strPath = pathpesq.Substring((Posguardar + tamfiltro), tamanhostring);
+                strPath = strPath.Replace("\\", "");
+                if (Usouunderline == true)
+                {
+                    Strretorno = strPath.Replace("_", "");
+                }
+                else
+                {
+                    Strretorno = strPath;
+                }
+            }
+            catch (Exception e)
+            {
+                //  Comum.Geralog("Erro: " + "Pesquisastring " + DateTime.Now.ToString() + " OperacaodeDiretorioTfs1.Pesquisastring ", e.Message.ToString() + " ", e.Source.ToString());
+            }
+            return Posguardar + tamfiltro;
+        }
         public string Pesquisastring(string pathpesq, string filtro)
         //***********************************************************
         //Pesquisa dentro de uma string de diretório pelo pasta raiz
@@ -421,7 +487,11 @@ namespace ComparaArquivos
             {
                 ListadePasta2.Add(new ListaPasta2 { Diretorio = v.DirectoryName.ToString().ToLower(), Fonte = v.Name.ToLower() });
             }
-            for(int aa=0;aa<a;aa++)
+            //
+
+
+            //
+            for (int aa=0;aa<a;aa++)
             {
                 string fonte=ListadePasta1[aa].Fonte.ToString();
                 string path1= ListadePasta1[aa].Diretorio.ToString();
@@ -452,5 +522,52 @@ namespace ComparaArquivos
             }
         }
 
+        public void testacomparatfs()
+        {
+            string caminhosemfonte = "";
+            string retorno = "";
+            string caminhocompletocomfonte = "";
+            string fontes = "$/All/Projetos/Bradesco/Sise/17-2833/Construção/";
+            string UrlTfs = "http://tfs:8080/tfs/Sistran";
+            TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
+            VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
+            TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
+            
+            ItemSet items = versionControlServer.GetItems("$/All/Projetos/Bradesco/Sise/17-2833/Construção/", RecursionType.Full);
+            dgwdirconflito.Rows.Clear();
+            foreach (Item item in items.Items)
+            {
+                if (item.ServerItem.Contains(".cls") || item.ServerItem.Contains(".vb") || item.ServerItem.Contains(".frm") || item.ServerItem.Contains(".sql") || item.ServerItem.Contains(".asp") || item.ServerItem.Contains(".rpt") || item.ServerItem.Contains(".bas"))
+                {
+                    string tambytes = (item.ContentLength.ToString());
+                   int versao = item.ChangesetId;
+                    string datachk = item.CheckinDate.ToString();
+                    datachk = datachk.Substring(0, 10);
+                    caminhocompletocomfonte = item.ServerItem;
+                    int tam = Pesquisastring2(item.ServerItem, @"/");
+                   // int t = Convert.ToInt32(tam);
+                    caminhosemfonte = caminhocompletocomfonte.Remove(tam);
+                    string fonte = caminhocompletocomfonte.Replace(caminhosemfonte, "");
+                    string modulofonte = caminhocompletocomfonte.Replace(caminhosemfonte, "");
+                    int tammodulo = Pesquisastring2(caminhosemfonte, "/");//da o nome da pasta
+                    string caminhosemmodulo = caminhocompletocomfonte.Substring(0, tammodulo);
+                    string y = caminhocompletocomfonte.Replace(caminhosemmodulo, "");
+                    string nomemodulo = y.Replace(fonte, "");
+                    nomemodulo = nomemodulo.Replace("/", "");
+
+                    dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
+                        foreach (DataGridViewRow row in dgwtfs.Rows)
+
+                            if (caminhocompletocomfonte.Contains(fontes))
+                    {
+                        retorno = caminhocompletocomfonte.Replace("$", "D:");
+
+                        retorno = retorno.Replace(@"/", @"\"); retorno = retorno.Replace(@"D:\All\Projetos\Bradesco\Sise\", @"D:\Controle_de_Ambientes_Pastas\Projetos_Ativos\");
+                    }
+
+
+                }
+            }
+        }
     }
 }
