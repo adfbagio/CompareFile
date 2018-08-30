@@ -80,7 +80,9 @@ namespace ComparaArquivos
             }
 
             //--------------
-          //  listapasta1(txtPasta1.Text);
+            //  listapasta1(txtPasta1.Text);
+            ListadePasta1.Clear();
+            ListadePasta2.Clear();
             testacomparatfs();
             btnPasta1.Enabled = false;
             
@@ -111,8 +113,8 @@ namespace ComparaArquivos
 
             btnPasta2.Enabled = false;
          ///////   ComparaListas();
-            testageral();
-            testacomparatfs();
+           // testageral();
+            testacomparatfs1();
         }
 
         public void listapasta2(string caminho)
@@ -556,9 +558,81 @@ namespace ComparaArquivos
                     nomemodulo = nomemodulo.Replace("/", "");
 
                     dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
-                        foreach (DataGridViewRow row in dgwtfs.Rows)
+                    foreach (DataGridViewRow row in dgwtfs.Rows)
 
-                            if (caminhocompletocomfonte.Contains(fontes))
+                        //  ListadePasta1.Clear();
+
+                        if (ListadePasta1.Count == 0)
+                        { ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+
+                    //  ListadePasta2.Clear();
+                    if (ListadePasta2.Count == 0)
+                    { ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+
+                    if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
+                    { var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
+
+                    if (caminhocompletocomfonte.Contains(fontes))
+                    {
+                        retorno = caminhocompletocomfonte.Replace("$", "D:");
+
+                        retorno = retorno.Replace(@"/", @"\"); retorno = retorno.Replace(@"D:\All\Projetos\Bradesco\Sise\", @"D:\Controle_de_Ambientes_Pastas\Projetos_Ativos\");
+                    }
+
+
+                }
+            }
+        }
+
+        public void testacomparatfs1()
+        {
+            string caminhosemfonte = "";
+            string retorno = "";
+            string caminhocompletocomfonte = "";
+            string fontes = "$/All/Projetos/Bradesco/Sise/17-2833/Construção/";
+            string UrlTfs = "http://tfs:8080/tfs/Sistran";
+            TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
+            VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
+            TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
+
+            ItemSet items = versionControlServer.GetItems("$/All/Projetos/Bradesco/Sise/17-2833/Construção/", RecursionType.Full);
+            dgwdirconflito.Rows.Clear();
+            foreach (Item item in items.Items)
+            {
+                if (item.ServerItem.Contains(".cls") || item.ServerItem.Contains(".vb") || item.ServerItem.Contains(".frm") || item.ServerItem.Contains(".sql") || item.ServerItem.Contains(".asp") || item.ServerItem.Contains(".rpt") || item.ServerItem.Contains(".bas"))
+                {
+                    string tambytes = (item.ContentLength.ToString());
+                    int versao = item.ChangesetId;
+                    string datachk = item.CheckinDate.ToString();
+                    datachk = datachk.Substring(0, 10);
+                    caminhocompletocomfonte = item.ServerItem;
+                    int tam = Pesquisastring2(item.ServerItem, @"/");
+                    // int t = Convert.ToInt32(tam);
+                    caminhosemfonte = caminhocompletocomfonte.Remove(tam);
+                    string fonte = caminhocompletocomfonte.Replace(caminhosemfonte, "");
+                    string modulofonte = caminhocompletocomfonte.Replace(caminhosemfonte, "");
+                    int tammodulo = Pesquisastring2(caminhosemfonte, "/");//da o nome da pasta
+                    string caminhosemmodulo = caminhocompletocomfonte.Substring(0, tammodulo);
+                    string y = caminhocompletocomfonte.Replace(caminhosemmodulo, "");
+                    string nomemodulo = y.Replace(fonte, "");
+                    nomemodulo = nomemodulo.Replace("/", "");
+
+                    dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
+                    foreach (DataGridViewRow row in dgwtfs.Rows)
+
+                        //  ListadePasta1.Clear();
+
+                        //if (ListadePasta1.Count == 0)
+                        //{ ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+
+                    //  ListadePasta2.Clear();
+                    if (ListadePasta2.Count == 0)
+                    { ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+
+                    if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
+                    { var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
+
+                    if (caminhocompletocomfonte.Contains(fontes))
                     {
                         retorno = caminhocompletocomfonte.Replace("$", "D:");
 
