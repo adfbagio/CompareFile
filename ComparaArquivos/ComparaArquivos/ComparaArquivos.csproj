@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\..\..\..\..\..\All\Projetos\Bradesco\Sise\Gestão de Ambiente\Multi Manager\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\..\..\..\..\..\..\All\Projetos\Bradesco\Sise\Gestão de Ambiente\Multi Manager\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.TeamFoundation.Client">
       <HintPath>..\..\..\..\..\..\..\..\All\Projetos\Bradesco\Sise\Gestão de Ambiente\SCA\BUSS\lib\net45\Microsoft.TeamFoundation.Client.dll</HintPath>
     </Reference>
@@ -42,6 +48,8 @@
       <HintPath>..\..\..\..\..\..\..\..\All\Projetos\Bradesco\Sise\Gestão de Ambiente\SCA\BUSS\Team\Microsoft.VisualStudio.Services.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,7 +62,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Banco\Contexto\Contexto.cs" />
+    <Compile Include="Banco\Contexto\ContextoADO.cs" />
+    <Compile Include="Banco\Contexto\DbSet\AcessoMultiManager.cs" />
+    <Compile Include="Banco\Contexto\DbSet\BancosDeDados.cs" />
+    <Compile Include="Banco\Contexto\DbSet\ConBancoBs.cs" />
+    <Compile Include="Banco\Contexto\DbSet\DetalhesProjeto.cs" />
+    <Compile Include="Banco\Contexto\DbSet\DictExecTabelasSise.cs" />
+    <Compile Include="Banco\Contexto\DbSet\FontesProjetoConfAtuSt.cs" />
+    <Compile Include="Banco\Contexto\DbSet\FontesProjetos.cs" />
+    <Compile Include="Banco\Contexto\DbSet\FormExec.cs" />
+    <Compile Include="Banco\Contexto\DbSet\ProcExecProc.cs" />
+    <Compile Include="Banco\Contexto\DbSet\ProcExecTabelasSise.cs" />
+    <Compile Include="Banco\Contexto\DbSet\ProjetosTfs.cs" />
+    <Compile Include="Banco\Contexto\DbSet\RelatoriosDetalhes.cs" />
+    <Compile Include="Banco\Contexto\DbSet\RelatoriosDetCampoProcs.cs" />
+    <Compile Include="Banco\Contexto\DbSet\RelatoriosSise.cs" />
+    <Compile Include="Banco\Contexto\GenericParametes.cs" />
+    <Compile Include="Banco\Contexto\Repositorio.cs" />
+    <Compile Include="Banco\Interfaces\IConBancoBsRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IDictExecTabelasSiseRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IFormExceRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IProcExecProcRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IProcExecTabelasSiseRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IRelatoriosDetalhesRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IRelatoriosDetCampoProcsRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\IRelatoriosSiseRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\ConBancoBsRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\DictExecTabelasSiseRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\FormExcecRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\ProcExecProcRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\ProcExecTabelasSiseRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\RelatoriosDetalhesRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\RelatoriosDetCampoProcsRepositorio.cs" />
+    <Compile Include="Banco\Interfaces\Repositório\RelatoriosSiseRepositorio.cs" />
+    <Compile Include="Banco\IRepositorio.cs" />
+    <Compile Include="Banco\QueryBanco.cs" />
+    <Compile Include="Banco\QueryBancoGenericas.cs" />
     <Compile Include="ClsComum.cs" />
+    <Compile Include="clsProjetos.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

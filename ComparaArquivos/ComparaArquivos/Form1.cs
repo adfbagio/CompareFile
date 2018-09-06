@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,9 +20,17 @@ namespace ComparaArquivos
 
     public partial class Form1 : Form
     {
+
+        public string retornosegundacompa;
+        public string caminho,memoria;
+        public int u = 0;
         public clsComum Comum = new clsComum();
         public List<ListaPasta1> ListadePasta1 = new List<ListaPasta1>();
         public List<ListaPasta2> ListadePasta2 = new List<ListaPasta2>();
+        public string fontes = "$/All/Projetos/";//base de onde partir
+        public List<ListaPastaS1> ListadePastaS1 = new List<ListaPastaS1>();
+        public List<ListaPastaS2> ListadePastaS2 = new List<ListaPastaS2>();
+
         public List<ListaFontesEncontrado> ListaFontesEncontrados = new List<ListaFontesEncontrado>();
         public bool arquivossaoiguais;
 
@@ -39,14 +48,36 @@ namespace ComparaArquivos
         {
             public string Diretorio { get; set; }
             public string Fonte { get; set; }
+            public string Tamanho { get; set; }
+            public string Modulo { get; set; }
         }
 
         public class ListaPasta2
         {
             public string Diretorio { get; set; }
             public string Fonte { get; set; }
+            public string Tamanho { get; set; }
+            public string Modulo { get; set; }
+        }
+        /// <summary>
+        /// ///////////////////////
+        /// </summary>
+        /// 
+        public class ListaPastaS1
+        {
+            public string Diretorio { get; set; }
+            public string Fonte { get; set; }
+            public string Tamanho { get; set; }
+            public string Modulo { get; set; }
         }
 
+        public class ListaPastaS2
+        {
+            public string Diretorio { get; set; }
+            public string Fonte { get; set; }
+            public string Tamanho { get; set; }
+            public string Modulo { get; set; }
+        }
         public class ListaFontesEncontrado
         {
 
@@ -59,8 +90,33 @@ namespace ComparaArquivos
             InitializeComponent();
         }
 
+        public void CarregarComboProjetos()
+        {
+            try
+            {
+                clsProjetos projeto = new clsProjetos();
+                dgwprojetos.DataSource = projeto.Get_ProjetosFiltro();
+
+
+                dgwprojetos.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                dgwprojetos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                //cboprojetos.DataSource = projeto.Get_ProjetosFiltro();
+
+                //cboprojetos.DisplayMember = "IDProjeto";
+                //cboprojetos.ValueMember = "NomeProjeto";
+                //cboprojetos.SelectedIndex = -1;
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         private void btnPasta1_Click(object sender, EventArgs e)
         {
+
+            CarregarComboProjetos();
             //btncon.Enabled = true;
             //btncon.BackColor = Color.Silver;
             fbd1.Description = @"Selecione uma pasta para localizar os objetos";
@@ -80,10 +136,10 @@ namespace ComparaArquivos
             }
 
             //--------------
-            //  listapasta1(txtPasta1.Text);
+          //////////    listapasta1(txtPasta1.Text);
             ListadePasta1.Clear();
             ListadePasta2.Clear();
-            testacomparatfs();
+          //  testacomparatfs();
             btnPasta1.Enabled = false;
             
         }
@@ -99,7 +155,7 @@ namespace ComparaArquivos
             //var a = Global.GlobalVarLink1;
             //lblcon.Text = Global.GlobalVar1;
             //Exibe a caixa de diálogo
-            //  limpapastas();
+         // limpapastas();
             DialogResult result = this.fbd1.ShowDialog();
             if (result == DialogResult.OK)
             {
@@ -109,12 +165,12 @@ namespace ComparaArquivos
             }
 
             //--------------
-            listapasta2(txtPasta2.Text);
+        //////    listapasta2(txtPasta2.Text);
 
             btnPasta2.Enabled = false;
-         ///////   ComparaListas();
-           // testageral();
-            testacomparatfs1();
+         ///// ComparaListas();
+          testageral();
+          //  testacomparatfs1();
         }
 
         public void listapasta2(string caminho)
@@ -470,7 +526,7 @@ namespace ComparaArquivos
 
             var distItemsquerylistaobjetos = from list1Item in querylistaobjetos
                             join list2Item in querylistaobjetos2 on list1Item.Name equals list2Item.Name
-                            where (list2Item != null)
+                            where (list2Item != null )
                             select list1Item;
 
             var distItemsquerylistaobjetos2 = from list1Item in querylistaobjetos2
@@ -481,23 +537,44 @@ namespace ComparaArquivos
             ListadePasta1.Clear();
             foreach (var v in distItemsquerylistaobjetos)
             {
-                
-                ListadePasta1.Add(new ListaPasta1 { Diretorio = v.DirectoryName.ToString().ToLower(), Fonte = v.Name.ToLower() });
+                string dir = Pesquisastring(v.DirectoryName.ToString(), "\\");
+                ListadePasta1.Add(new ListaPasta1 { Diretorio = v.Directory.ToString(), Fonte = v.Name.ToLower(), Modulo = dir,Tamanho=v.Length.ToString() });
             }
             ListadePasta2.Clear();
             foreach (var v in distItemsquerylistaobjetos2)
             {
-                ListadePasta2.Add(new ListaPasta2 { Diretorio = v.DirectoryName.ToString().ToLower(), Fonte = v.Name.ToLower() });
+                string dir = Pesquisastring(v.DirectoryName.ToString(), "\\");
+                ListadePasta2.Add(new ListaPasta2 { Diretorio = v.Directory.ToString(), Fonte = v.Name.ToLower() ,Modulo=dir, Tamanho = v.Length.ToString() });
             }
-            //
+            //lista fontes de mesmo nome e igual modulo:
+            var distItemsquerylistaobjetosT1 =from list1Item in ListadePasta1
+                                               join list2Item in ListadePasta2 on list1Item.Fonte equals list2Item.Fonte
+                                             where (list2Item != null && list2Item.Tamanho!= list1Item.Tamanho)
+                                             select list1Item;
 
+            foreach (var v in distItemsquerylistaobjetosT1)
+            {
+              // string jj = v.Modulo;
+              // string dir = Pesquisastring(v.Diretorio.ToString(), "\\");
+                ListadePastaS1.Add(new ListaPastaS1 { Diretorio = v.Diretorio.ToString().ToLower(), Fonte = v.Fonte.ToLower(), Modulo = v.Modulo });
+            }
 
+            var distItemsquerylistaobjetosT2 = from list2Item in ListadePasta2
+                                               join list1Item in ListadePasta1 on list2Item.Fonte equals list1Item.Fonte
+                                               where (list1Item != null && list1Item.Tamanho != list2Item.Tamanho)
+                                               select list2Item;
+
+            foreach (var v in distItemsquerylistaobjetosT2)
+            {
+                // string dir = Pesquisastring(v.Diretorio.ToString(), "\\");
+                ListadePastaS2.Add(new ListaPastaS2 { Diretorio = v.Diretorio.ToString().ToLower(), Fonte = v.Fonte.ToLower(), Modulo = v.Modulo });
+            }
             //
             for (int aa=0;aa<a;aa++)
             {
-                string fonte=ListadePasta1[aa].Fonte.ToString();
-                string path1= ListadePasta1[aa].Diretorio.ToString();
-                string path2 = ListadePasta2[aa].Diretorio.ToString();
+                string fonte= ListadePastaS1[aa].Fonte.ToString();
+                string path1= ListadePastaS1[aa].Diretorio.ToString();
+                string path2 = ListadePastaS2[aa].Diretorio.ToString();
                 comparateit2dir(path1 + "\\" + fonte, path2 + "\\" + fonte, fonte);
             }
             var queryDesenvenaoSt = (from file in querylistaobjetos2
@@ -524,23 +601,74 @@ namespace ComparaArquivos
             }
         }
 
-        public void testacomparatfs()
+        private void Form1_Load(object sender, EventArgs e)
         {
+            CarregarComboProjetos();
+        }
+
+        private void dgwprojetos_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            string IdProjeto="";
+            int _linhaIndice = e.RowIndex;
+
+            if (_linhaIndice == -1) return;
+
+            DataGridViewRow rowData = dgwprojetos.Rows[_linhaIndice];
+
+            int j = dgwprojetos.Rows.Count;
+            if (j > 0)
+            {
+                
+                 IdProjeto = rowData.Cells[0].Value.ToString().Substring(0, 7);
+                testacomparatfs(IdProjeto);
+            }
+            //loop dos outros projetos
+            foreach (DataGridViewRow row in dgwprojetos.Rows)
+            {
+                string a1 = row.Cells["IDProjeto"].Value.ToString();
+                if (a1 != IdProjeto)
+                { testacomparatfs1(a1); }
+            }
+            if (u == 0)
+            {
+                MessageBox.Show("Não foram encontrados conflitos!");
+            }
+        }
+
+        private void dgwtfs_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dgwtfsreal_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        public string testacomparatfs(string projeto)
+        {
+            int itens = 0;
+            int u = 0;
+            string retornoerro="OK";
+            //string projeto = "";
             string caminhosemfonte = "";
             string retorno = "";
             string caminhocompletocomfonte = "";
-            string fontes = "$/All/Projetos/Bradesco/Sise/17-2833/Construção/";
+            //string fontes = "$/All/Projetos/Bradesco/Sise/17-2833/Construção/";
+            string fontes = "$/All/Projetos/Bradesco/Sise/"+ projeto + "/Construção/";
             string UrlTfs = "http://tfs:8080/tfs/Sistran";
             TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
             VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
             TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
             
-            ItemSet items = versionControlServer.GetItems("$/All/Projetos/Bradesco/Sise/17-2833/Construção/", RecursionType.Full);
+            ItemSet items = versionControlServer.GetItems(fontes, RecursionType.Full);
             dgwdirconflito.Rows.Clear();
             foreach (Item item in items.Items)
             {
                 if (item.ServerItem.Contains(".cls") || item.ServerItem.Contains(".vb") || item.ServerItem.Contains(".frm") || item.ServerItem.Contains(".sql") || item.ServerItem.Contains(".asp") || item.ServerItem.Contains(".rpt") || item.ServerItem.Contains(".bas"))
                 {
+                    itens++;
+                  string hh=  items.Items[9].ToString();
                     string tambytes = (item.ContentLength.ToString());
                    int versao = item.ChangesetId;
                     string datachk = item.CheckinDate.ToString();
@@ -557,20 +685,20 @@ namespace ComparaArquivos
                     string nomemodulo = y.Replace(fonte, "");
                     nomemodulo = nomemodulo.Replace("/", "");
 
-                    dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
-                    foreach (DataGridViewRow row in dgwtfs.Rows)
+                    //dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
+                    //foreach (DataGridViewRow row in dgwtfs.Rows)
 
                         //  ListadePasta1.Clear();
 
-                        if (ListadePasta1.Count == 0)
-                        { ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+                     //   if (ListadePasta1.Count == 0)
+                        { ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte, Tamanho = tambytes, Modulo = nomemodulo }); }
 
-                    //  ListadePasta2.Clear();
-                    if (ListadePasta2.Count == 0)
-                    { ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+                    ////  ListadePasta2.Clear();
+                    //if (ListadePasta2.Count == 0)
+                    //{ ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
 
-                    if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
-                    { var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
+                    //if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
+                    //{ var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
 
                     if (caminhocompletocomfonte.Contains(fontes))
                     {
@@ -581,22 +709,158 @@ namespace ComparaArquivos
 
 
                 }
+               
             }
+             if(ListadePasta1.Count==0)
+                { retornoerro = "O projeto não tem fontes"; }
+            return retornoerro;
         }
 
-        public void testacomparatfs1()
+        private void button1_Click(object sender, EventArgs e)
         {
-            string caminhosemfonte = "";
-            string retorno = "";
-            string caminhocompletocomfonte = "";
-            string fontes = "$/All/Projetos/Bradesco/Sise/17-2833/Construção/";
+            tv();
+            memoria = "";
+          //  testa("");
+
+        }
+        public void tv()
+        {
+            //tfs
+         
             string UrlTfs = "http://tfs:8080/tfs/Sistran";
             TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
             VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
             TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
+            //var t = versionControlServer.GetWorkspace(fontes);
+            // ItemSet items = versionControlServer.GetItems(fontes , RecursionType.Full);
+            ItemSet itemsAbaixodeProjetos = versionControlServer.GetItems(fontes, RecursionType.OneLevel);
 
-            ItemSet items = versionControlServer.GetItems("$/All/Projetos/Bradesco/Sise/17-2833/Construção/", RecursionType.Full);
+            TreeNode rootNode = tvTfs.Nodes.Add("Projetos");
+            rootNode.ImageIndex = 0;
+            TreeNode forms = new TreeNode("forms");
+            TreeNode child = new TreeNode("forms1");
+
+            int qtdeitensAbaixoProj = itemsAbaixodeProjetos.Items.Count();
+            for (int i = 1; i < qtdeitensAbaixoProj; i++)
+            {
+                string fgs = itemsAbaixodeProjetos.Items[i].ServerItem.ToString();
+                string ITEM = Pesquisastring(fgs, @"/");
+                forms = rootNode.Nodes.Add(ITEM);
+            }
+            
+           
+
+            foreach (Item item in itemsAbaixodeProjetos.Items)
+            {
+              
+
+                string fg = itemsAbaixodeProjetos.Items[1].ServerItem.ToString();
+               
+                //ItemSet itemsAh = versionControlServer.GetItems(fg, RecursionType.OneLevel);
+                //string fgT = itemsAh.Items[3].ServerItem.ToString();
+                //ItemSet itemsAAh = versionControlServer.GetItems(fgT, RecursionType.OneLevel);
+            }
+
+                //tfs
+
+               
+        }
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tvTfs_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            string IdProjeto = "";
+            string selectedNodeText = e.Node.Text;
+            string parente = e.Node.Parent.Text;
+            if (memoria == "" && parente!="Projetos")
+            { memoria = parente; }
+            string UrlTfs = "http://tfs:8080/tfs/Sistran";
+            TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
+            VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
+            TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
+            //var t = versionControlServer.GetWorkspace(fontes);
+            // ItemSet items = versionControlServer.GetItems(fontes , RecursionType.Full);
+            if (parente == "Projetos")
+            {
+                 caminho = fontes + selectedNodeText;
+            }
+            else
+            {
+                 caminho = fontes +  parente+"/"+selectedNodeText;
+            }
+            ItemSet itemsAbaixodeProjetos = versionControlServer.GetItems(caminho, RecursionType.OneLevel);
+
+            if (e.Node.Tag != null)
+            { string selectedNodeTextw = e.Node.Tag.ToString(); }
+
+            int qtdeitensAbaixoProj = itemsAbaixodeProjetos.Items.Count();
+            for (int i = 1; i < qtdeitensAbaixoProj; i++)
+            {
+                string fgs = itemsAbaixodeProjetos.Items[i].ServerItem.ToString();
+                string ITEM = Pesquisastring(fgs, @"/");
+                tvTfs.SelectedNode.Nodes.Add(ITEM);
+            }
+
+            if(selectedNodeText.Contains("-"))
+            {
+                // IdProjeto = "";
+                IdProjeto = selectedNodeText;
+               string retornoerro= testacomparatfs(IdProjeto);
+                //valida se o primeiro projeto tem fontes se nao tem aborta o processo
+                if (retornoerro == "OK")
+                {
+                    caminho = fontes + memoria + "/" + parente;// + "/" + selectedNodeText;
+                    ItemSet itensoutrosproj = versionControlServer.GetItems(caminho, RecursionType.OneLevel);
+                    int qtdeitensoutrosproj = itensoutrosproj.Items.Count();
+                    for (int i = 1; i < qtdeitensoutrosproj; i++)
+                    {
+                        string fgs = itensoutrosproj.Items[i].ServerItem.ToString();
+                        string ITEM = Pesquisastring(fgs, @"/");
+                        if (ITEM != IdProjeto)
+                        {
+
+                            retornosegundacompa = testacomparatfs1(ITEM);
+                            if(retornosegundacompa!="OK")
+                            { retornosegundacompa = retornosegundacompa + ": " + ITEM; }
+                            dgwretorno.Rows.Add(ITEM, IdProjeto, retornosegundacompa);
+                        }
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("O projeto: " + IdProjeto+" não possui fontes, comparação abortada");
+                }
+
+            }
+
+        }
+
+        private void btnpesq_Click(object sender, EventArgs e)
+        {
+            
+
+        }
+
+        public string testacomparatfs1(string projeto)
+        {
+           
+            string retornoerro="ok";
+            string caminhosemfonte = "";
+            string retorno = "";
+            string caminhocompletocomfonte = "";
+            string fontes = "$/All/Projetos/Bradesco/Sise/" + projeto + "/Construção/";
+            string UrlTfs = "http://tfs:8080/tfs/Sistran";
+            TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
+            VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
+            TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
+            ListadePasta2.Clear();
+            ItemSet items = versionControlServer.GetItems("$/All/Projetos/Bradesco/Sise/" + projeto + "/Construção/", RecursionType.Full);
             dgwdirconflito.Rows.Clear();
+            int yy = items.Items.Count();
             foreach (Item item in items.Items)
             {
                 if (item.ServerItem.Contains(".cls") || item.ServerItem.Contains(".vb") || item.ServerItem.Contains(".frm") || item.ServerItem.Contains(".sql") || item.ServerItem.Contains(".asp") || item.ServerItem.Contains(".rpt") || item.ServerItem.Contains(".bas"))
@@ -616,21 +880,166 @@ namespace ComparaArquivos
                     string y = caminhocompletocomfonte.Replace(caminhosemmodulo, "");
                     string nomemodulo = y.Replace(fonte, "");
                     nomemodulo = nomemodulo.Replace("/", "");
+                  
+                    //dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
+                    //foreach (DataGridViewRow row in dgwtfs.Rows)
 
-                    dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
-                    foreach (DataGridViewRow row in dgwtfs.Rows)
+                    //  ListadePasta1.Clear();
 
-                        //  ListadePasta1.Clear();
-
-                        //if (ListadePasta1.Count == 0)
-                        //{ ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+                    //if (ListadePasta1.Count == 0)
+                    //{ ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
 
                     //  ListadePasta2.Clear();
-                    if (ListadePasta2.Count == 0)
-                    { ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+                    // if (ListadePasta2.Count == 0)
+                    { ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte,Tamanho= tambytes,Modulo=nomemodulo }); }
 
-                    if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
-                    { var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
+                 
+
+
+                    //if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
+                    //{ var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
+
+                    //if (caminhocompletocomfonte.Contains(fontes))
+                    //{
+                    //    retorno = caminhocompletocomfonte.Replace("$", "D:");
+
+                    //    retorno = retorno.Replace(@"/", @"\"); retorno = retorno.Replace(@"D:\All\Projetos\Bradesco\Sise\", @"D:\Controle_de_Ambientes_Pastas\Projetos_Ativos\");
+                    //}
+
+
+                }
+
+            }
+            //duas listas pois nesse metodo se compara as duas listas
+            //pode ocorer de ListadePasta1 ou ListadePasta2 não tenham dados, nao que o projeto
+            //não tenha fontes nas pastas,mas que nao tenha fontes que estejam no filtro acima
+            //logo no caso de uma lista não tiver fontes gerar menssagem,no caso das duas listas
+            //gerar outra menssagem
+
+            if (ListadePasta1.Count == 0 && ListadePasta2.Count == 0)
+            {
+                retornoerro = "Ambos projetos não possuem fontes";
+            }
+            if (ListadePasta1.Count == 0 || ListadePasta2.Count == 0)
+            {
+                retornoerro = "Um dos projetos não possue fontes";
+            }
+
+            if (ListadePasta1.Count > 0 && ListadePasta2.Count > 0)
+            {
+
+                var distItemsquerylistaobjetos = from list1Item in ListadePasta1
+                                                 join list2Item in ListadePasta2 on list1Item.Fonte equals list2Item.Fonte
+                                                 where (list2Item != null)
+                                                 select list1Item;
+
+                var distItemsquerylistaobjetos2 = from list2Item in ListadePasta2
+                                                  join list1Item in ListadePasta1 on list2Item.Fonte equals list1Item.Fonte
+                                                  where (list1Item != null)
+                                                  select list2Item;
+
+                int e = distItemsquerylistaobjetos.Count();
+                int e2 = distItemsquerylistaobjetos2.Count();
+                if (e != 0 && e2 != 0)
+                {
+                    var distdisferenca = from list2Item in distItemsquerylistaobjetos2
+                                         join list1Item in distItemsquerylistaobjetos on list2Item.Fonte equals list1Item.Fonte
+                                         where (list1Item.Tamanho != list2Item.Tamanho && list1Item.Modulo == list2Item.Modulo)
+                                         select list2Item;
+                    u = distdisferenca.Count();
+                    var distdisferenca2 = (from list1Item in distItemsquerylistaobjetos
+                                           join list2Item in distItemsquerylistaobjetos2 on list1Item.Fonte equals list2Item.Fonte
+                                           where (list2Item.Tamanho != list1Item.Tamanho && list1Item.Modulo == list2Item.Modulo)
+                                           select list1Item).Distinct();
+                    // var MyCombinedList = distdisferenca.Union(distdisferenca2);
+                    //foreach (var h in distdisferenca2)
+                    //{
+                    //    dgwtfs.Rows.Add(projeto,h.Fonte, h.Diretorio, h.Tamanho);
+                    //}
+                    //distItemsquerylistaobjetos = null;
+                    //distItemsquerylistaobjetos2 = null;
+                    foreach (var h in distdisferenca)
+                    {
+                        dgwtfs2.Rows.Add(projeto, h.Fonte, h.Diretorio, h.Tamanho);
+                    }
+
+                    //distdisferenca = null;
+                    //distdisferenca2 = null;
+                    //  var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte));
+                }
+            }
+
+            return retornoerro;
+        }
+
+
+        ///botao testa
+        ///
+        public void testa(string projeto)
+        {
+            int itens = 0;
+            int u = 0;
+            //string projeto = "";
+            string caminhosemfonte = "";
+            string retorno = "";
+            string caminhocompletocomfonte = "";
+            //string fontes = "$/All/Projetos/Bradesco/Sise/17-2833/Construção/";
+          //  string fontes = "$/All/Projetos/Bradesco/Sise/";
+            string fontes = "$/All/Projetos/";//base de onde partir
+            string UrlTfs = "http://tfs:8080/tfs/Sistran";
+            TfsTeamProjectCollection teamProjectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(UrlTfs));
+            VersionControlServer versionControlServer = teamProjectCollection.GetService<VersionControlServer>();
+            TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(UrlTfs));
+            //var t = versionControlServer.GetWorkspace(fontes);
+           // ItemSet items = versionControlServer.GetItems(fontes , RecursionType.Full);
+            ItemSet itemsAbaixodeProjetos = versionControlServer.GetItems(fontes, RecursionType.OneLevel);
+            dgwdirconflito.Rows.Clear();
+            foreach (Item item in itemsAbaixodeProjetos.Items)
+            {
+              int qtdeitensAbaixoProj= itemsAbaixodeProjetos.Items.Count();
+                string fg = itemsAbaixodeProjetos.Items[1].ServerItem.ToString();
+                ItemSet itemsAh = versionControlServer.GetItems(fg, RecursionType.OneLevel);
+                string fgT = itemsAh.Items[3].ServerItem.ToString();
+                ItemSet itemsAAh = versionControlServer.GetItems(fgT, RecursionType.OneLevel);
+                char[] charSeparators = new char[]  {'/' };
+
+                //Using split to isolated the Project Name and the File Name
+
+                string[] ss = item.ServerItem.Split(charSeparators, StringSplitOptions.None);
+                if (item.ServerItem.Contains(".cls") || item.ServerItem.Contains(".vb") || item.ServerItem.Contains(".frm") || item.ServerItem.Contains(".sql") || item.ServerItem.Contains(".asp") || item.ServerItem.Contains(".rpt") || item.ServerItem.Contains(".bas"))
+                {
+                    itens++;
+                  //  string hh = items.Items[9].ToString();
+                    string tambytes = (item.ContentLength.ToString());
+                    int versao = item.ChangesetId;
+                    string datachk = item.CheckinDate.ToString();
+                    datachk = datachk.Substring(0, 10);
+                    caminhocompletocomfonte = item.ServerItem;
+                    int tam = Pesquisastring2(item.ServerItem, @"/");
+                    // int t = Convert.ToInt32(tam);
+                    caminhosemfonte = caminhocompletocomfonte.Remove(tam);
+                    string fonte = caminhocompletocomfonte.Replace(caminhosemfonte, "");
+                    string modulofonte = caminhocompletocomfonte.Replace(caminhosemfonte, "");
+                    int tammodulo = Pesquisastring2(caminhosemfonte, "/");//da o nome da pasta
+                    string caminhosemmodulo = caminhocompletocomfonte.Substring(0, tammodulo);
+                    string y = caminhocompletocomfonte.Replace(caminhosemmodulo, "");
+                    string nomemodulo = y.Replace(fonte, "");
+                    nomemodulo = nomemodulo.Replace("/", "");
+
+                    //dgwtfs.Rows.Add(fonte, datachk, tambytes, caminhocompletocomfonte);
+                    //foreach (DataGridViewRow row in dgwtfs.Rows)
+
+                    //  ListadePasta1.Clear();
+
+                    //   if (ListadePasta1.Count == 0)
+                    { ListadePasta1.Add(new ListaPasta1 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte, Tamanho = tambytes, Modulo = nomemodulo }); }
+
+                    ////  ListadePasta2.Clear();
+                    //if (ListadePasta2.Count == 0)
+                    //{ ListadePasta2.Add(new ListaPasta2 { Diretorio = caminhocompletocomfonte.ToLower(), Fonte = fonte }); }
+
+                    //if (ListadePasta2.Count > 0 && ListadePasta1.Count > 0)
+                    //{ var x = ListadePasta1.Select(a => a.Fonte).Except(ListadePasta2.Select(c => c.Fonte)); }
 
                     if (caminhocompletocomfonte.Contains(fontes))
                     {
